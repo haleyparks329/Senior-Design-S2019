@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Matlab Code</title>
+<meta charset="utf-8">
+</head>
+    
+    <body>
+        
+        <h1>Matlab Code</h1>
+        
+        <p>The following code is written by Jennifer Fisher.</p> 
+        <br>
+        <p>Source 1: https://www.mathworks.com/matlabcentral/answers/343169-how-do-i-acquire-bpm-from-a-noisy-heart-beat-wav-data
+        <br>
+        Source 2: https://www.mathworks.com/matlabcentral/answers/419468-convert-sound-of-heart-beat-into-beats-per-minute</p>
+        <br>
+        <p>%Step_100_read_audiofile_filter_and_bpm_calc
+        clear, clc, close all
+        %enter the audio file and path if it is not the directory you are in
+        filename = input('What audio file do you want to use? \nWrite the complete path to your file.\n', 's');
+        name= input('\nWhat is the title of this recording? (This title will be used in graphs, new files, and new directory)\n', 's');
+        f = input('\nDo you want to save all the graphs and audiofiles in a new subdirectory?(Y or N) \nThis directory will be in the same direcotry as your audiofile.\n', 's');
+        a= input('Does your heartbeat need to be amplfied?\n Choose: N-none, 1- a little, 2- some, 3- alot\n');
+        [HRA0, Fs0] = audioread(filename);%wav
+        %if else wav code
+
+        %create matlab vaiarbales 
+        %HRA0- Audio data in the file, returned as an m-by-n matrix,
+        %where m is the number of audio samples read and n is the number of audio channels in the file.
+        %Fs0- Sample rate, in hertz, of audio data y, returned as a positive scalar.
+        %[HRA0, Fs0] = audioread(filename);
+        % filename = 'heart_sounds_3.m4a';
+        % [y,Fs] = audioread(filename);
+        % wavFilename = 'heart_sounds_3.wav';
+        %  audiowrite(wavFilename,y,Fs);
+        %filter and calc code inspired by 
+        %https://www.mathworks.com/matlabcentral/answers/343169-how-do-i-acquire-bpm-from-a-noisy-heart-beat-wav-data
+        %https://www.mathworks.com/matlabcentral/answers/419468-convert-sound-of-heart-beat-into-beats-per-minute
+
+        HRA = HRA0(1:10:end);                                           % Decimate
+        Fs = Fs0/5;
+        L = numel(HRA);
+        Ts = 1/Fs;                                                      % Sampling Interval
+        Fn = Fs/2;                                                      % Nyquist Frequency
+        t = linspace(0, L, L)/Fs;                                       % Time Vector
+        %PLOT od amplitude of raw recording 
+        figure
+        plot(t, HRA)
+        grid
+        xlabel('Time (s)')
+        ylabel('Amplitude')
+        t4= strcat ('Recorded Horse Phonocardiogram-', name);
+        title(t4)
+        %soundsc(HRA(1:fix(L/5)), Fs)
+
+        %The Fourier transform (FT) decomposes a function of time (a signal) into the 
+        %frequencies that make it up, in a way similar to 
+        %how a musical chord can be expressed as the frequencies (or pitches) of its constituent notes. 
+        %https://www.mathworks.com/help/releases/R2015a/matlab/ref/fft.html
+        FT_HRA = fft(HRA)/L;                                            % Fourier Transform
+        Fv = linspace(0, 1, fix(L/2)+1)*Fn;                             % Frequency Vector
+        Iv = 1:numel(Fv);                                               % Index Vector
+
+        %findpeaks finds local of peaks in the data
+        [Pks,Locs] = findpeaks(abs(FT_HRA(Iv))*2, 'MinPeakHeight',2E-5, 'MinPeakDistance',100 );
+        Freqs = Fv(Locs);
+        figure
+        plot(Fv, abs(FT_HRA(Iv))*2)
+        hold on
+        plot(Fv(Locs), Pks, '^r')
+        hold off
+        grid
+        xlim([0, 250])
+        xlabel('Frequency (Hz)')
+        ylabel('Amplitude')
+        t1 = strcat('Fourier Transform of Horse Phonocardiogram-', name);
+        title(t1)
+        %text(200, min(Pks), sprintf('%.1f Hz    %7.1E\n', [Freqs(:) Pks]'), 'VerticalAlignment','bottom')
+        Wp = [40 80]/Fn;   %10Hz cutoff                                             % Design Filter & Filter Signal
+        Ws = [30 90]/Fn;
+        Rp = [0.5-0.2];
+        Rs = 10;
+        [n,Ws] = cheb2ord(Wp, Ws, Rp, Rs);
+        %[n,Wp] = ellipord(Wp, Ws, Rp, Rs);
+        %[z,p,k] = ellip(n,Rp,Rs,Wp);
+        [z,p,k] = cheby2(n,Rs,Ws); 
+        [sos,g] = zp2sos(z,p,k);
+        HRA_Filtered = filtfilt(sos, g, HRA);
+        [envh,envl] = envelope(HRA_Filtered, 6500, 'peak');             % Calculate Envelope
+        figure
+        plot(t, HRA_Filtered)
+        %save filter file 
+        hold on
+        plot(t, envh,    t, envl)
+        hold off
+        grid
+        xlabel('Time (s)')
+        ylabel('Amplitude')
+        t2 = strcat('Bandpass-Filtered Horse Phonocardiogram-', name);
+        title(t2)
+        envh1 = transpose(envh);
+        envl1= transpose(envl);
+        env_mean = mean([envh1, -envl1],2);
+        [PksB,LocB] = findpeaks(env_mean ,'MinPeakDistance',2);
+        HR_mean = numel(PksB)/max(t)*60;
+        figure
+        plot(t, env_mean)
+        hold on
+        plot(t(LocB), PksB, '^r')
+        hold off
+        grid
+        xlabel('Time (s)')
+        ylabel('Amplitude')
+        t3 = strcat('Peaks and Mean Envelope of Bandpass-Filtered Horse Phonocardiogram-', name);
+        title(t3)
+        text(mean(t), mean(PksB)/4, sprintf('Beats per Minute = %.1f / min', HR_mean), 'HorizontalAlignment','center')
+
+        if a== 1
+            amp= 10;
+        elseif a==2
+            amp= 100;
+        elseif a==3
+            amp=1000;
+        else
+            amp=1;
+        end
+        HRA_Filtered = HRA_Filtered * amp;
+
+        if f == 'Y'
+            mkdir(name)
+            cd(name)
+            savefig(1,t4)
+            saveas(1,t4, 'tiff')
+            savefig(2,t1)
+            saveas(2,t1, 'tiff')
+            savefig(3,t2)
+            saveas(3,t2, 'tiff')
+            savefig(4,t3)
+            saveas(4,t3, 'tiff')
+            wavFilename = strcat(name,'_filtered.wav');
+            audiowrite(wavFilename,HRA_Filtered ,Fs);
+            wavFilename = strcat(name,'_unfiltered.wav');
+            audiowrite(wavFilename,HRA0 ,Fs0);
+        end</p>
+        
+    </body>
+    
+</html>
