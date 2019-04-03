@@ -1,0 +1,48 @@
+/*body*/
+body {
+    text-align: center;
+    background-color: white;
+    font-family: Arial, Helvetica, sans-serif
+}
+
+/*h1*/
+h1 {
+    color: black;
+}
+
+/*h2*/
+h2 {
+    color: black;
+}
+
+/*h3*/
+h3 {
+    color: white;
+    border-style: solid;
+    border-color: #990000;
+    background-color: #990000;
+}
+
+/*h4*/
+h4 {
+    color: dimgray;
+}
+
+/*h5*/
+h5 {
+    color: black;
+}
+
+/*h6*/
+h6 {
+    color: black;
+}
+
+
+/*paragraph*/
+p {
+    color: black;
+    border-style: solid;
+    border-color: maroon;
+}
+
