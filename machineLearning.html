@@ -10,11 +10,74 @@
         <h1>Machine Learning</h1>
         
         <a href="main.html">Main</a>
-        <a href="machineLearning.html">Machine Learning</a>
+        <a href="device.html">Device in Action</a>
         <a href="matlab.html">Matlab</a>
+        <a href="machineLearning.html">Machine Learning</a>
         <a href="results.html">Results</a>
         <a href="soundDatabase.html">Sound Database</a>
+                
+        <h3>Extracting the Heart Sounds</h3>
         
+            <p>
+                To begin the processing of the heart sounds, an important pre-processing step has to be done: segmentation. Segmentation is the act of breaking up an audio signal into short homogeneous segments, which then the short sequences of audio are used for further processing. 
+                
+                <br><br>
+                
+                The following psuedocode walks through creating training data from the raw files. It goes through all the raw files, and extracts a part of the audio along with its respective label. Then the pesudocode will begin to pre-process the data. First, all of the extracted samples will be made the same shape. Second, the data is normalized. Third, appropriate X and Y are created for the data model.
+                
+                <br><br>
+                
+                After the data has been appropriately labeled and segment, a model is able to be created and trained on the transformed dataset.
+            </p>    
+                <pre>
+                    x = [] // data array
+                    y = [] // label array
+                    for j in range(temp[0]):
+                        for i in range(1, temp[1] - 1):
+                            read in data from database
+                            remove appropriate data segment
+                            add label to segment
+                            append data to x 
+                            append label to y
+                            
+                    // make samples same shape
+                    x = pad_sequences(x, maxlen, dtype, padding, truncating, value)
+                    
+                    // normalize data
+                    x = x / np.max(x)
+                    
+                    // create X and Y
+                    add x[] to X-axis
+                    add y[] to Y-axis
+                    map data into model
+                    
+                </pre>
+        
+        <h3>Training Methods</h3>
+        
+        <p>
+        
+            Multiple methods can be used to classify heartbeats, including the Naive Bayesian classifier, support vector machines (SVM), decision trees, and random forest. The Naive Bayes classifier and decision tree methods are examined and discussed on how they can be beneficial to this project.
+            
+            <br><br>
+            
+            Naive Bayesian classifiers are used for multiple classification problems, including everything from text classification to audio classification. Bayesian classifiers are optimal classifiers that minimize the average probablity of error; they are based on the assumption that previously known probablities and distributions of patterns are able to assign classes with one or more of the known probablities and patterns. A Naive Bayes classifier assumes that there is some independence between every pair of features. After every epoch, the classifier adjusts the calculation of likelihood probablities. 
+            
+            <br><br>
+            
+            Decision trees are a simple and easily intrepreted classification method. The method leaerns simple decision rules based on the features to predict the class of the target. How the trees are split are based on criterion scores. Decisions trees are a white box model, meaning that a decision can be easily expained using boolean logic.  Decision trees are a good fit for classifying heartbeats because of three main reasons: 1) do not need a lot of data; 2) can handle noisy data; and 3) can classify classes where its data points could be in multiple clusters in a feature space.
+            
+        </p>
+
+        <h3>Sources</h3>
+        
+        <p>
+            
+            <a href="https://www.analyticsvidhya.com/blog/2017/11/heart-sound-segmentation-deep-learning/">Heart Sound Segmentation</a> <br>
+            <a href="        https://lindawangg.github.io/projects/classifying-heartbeats.pdf">Classifying Heartbeats</a>
+
+        </p>
+                
     </body>
     
 </html>

@@ -10,20 +10,21 @@
         <h1>Matlab</h1>
         
         <a href="main.html">Main</a>
-        <a href="machineLearning.html">Machine Learning</a>
+        <a href="device.html">Device in Action</a>
         <a href="matlab.html">Matlab</a>
+        <a href="machineLearning.html">Machine Learning</a>
         <a href="results.html">Results</a>
         <a href="soundDatabase.html">Sound Database</a>
         
-        <p>The following code is written by Jennifer Fisher.</p> 
+        <p>The following code is written by Jennifer Fisher. 
         <br>
-        <p>Source 1: https://www.mathworks.com/matlabcentral/answers/343169-how-do-i-acquire-bpm-from-a-noisy-heart-beat-wav-data
+        Source 1: https://www.mathworks.com/matlabcentral/answers/343169-how-do-i-acquire-bpm-from-a-noisy-heart-beat-wav-data
         <br>
         Source 2: https://www.mathworks.com/matlabcentral/answers/419468-convert-sound-of-heart-beat-into-beats-per-minute</p>
         <br>
         
         <pre>
-        <code>%Step_100_read_audiofile_filter_and_bpm_calc
+        %Step_100_read_audiofile_filter_and_bpm_calc
         clear, clc, close all
         %enter the audio file and path if it is not the directory you are in
         filename = input('What audio file do you want to use? \nWrite the complete path to your file.\n', 's');
@@ -150,7 +151,7 @@
             audiowrite(wavFilename,HRA_Filtered ,Fs);
             wavFilename = strcat(name,'_unfiltered.wav');
             audiowrite(wavFilename,HRA0 ,Fs0);
-        end</code>
+        end
         </pre>
         
     </body>
